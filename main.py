@@ -1,11 +1,10 @@
 import asyncio
 import random
 import uuid
-import requests
+
+import cloudscraper
 from fake_useragent import UserAgent
 from loguru import logger
-import cloudscraper
-
 
 PING_INTERVAL = 60
 DOMAIN_API_ENDPOINTS = {
@@ -42,9 +41,7 @@ async def call_api(url, data, proxy, token):
     }
     try:
         scraper = cloudscraper.create_scraper()
-        response = scraper.post(
-            url, json=data, headers=headers, proxies={"http": proxy, "https": proxy}, timeout=30
-        )
+        response = scraper.post(url, json=data, headers=headers, proxies={"http": proxy, "https": proxy}, timeout=30)
         response.raise_for_status()
         return valid_resp(response.json())
     except Exception as e:
