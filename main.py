@@ -94,11 +94,10 @@ async def main():
     if not token:
         logger.error("Token cannot be empty. Exiting.")
         return
-
-    active_proxies = [proxy for proxy in all_proxies if proxy]
-    tasks = [render_profile_info(proxy, token) for proxy in active_proxies]
-
+        
     while True:
+        active_proxies = [proxy for proxy in all_proxies if proxy]
+        tasks = [render_profile_info(proxy, token) for proxy in active_proxies]    
         await asyncio.gather(*tasks)
 
 
