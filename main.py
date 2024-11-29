@@ -1,42 +1,40 @@
-import requests
 import asyncio
-import aiohttp
+import random
 import time
 import uuid
-import random
+
 import cloudscraper
-import pyfiglet
-from colorama import Fore 
-from loguru import logger
+import requests
+from colorama import Fore
 from fake_useragent import UserAgent
+from loguru import logger
+
 
 def display_header():
     custom_ascii_art = f"""
     {Fore.CYAN}
 
-         
+
     ███╗   ██╗ ██████╗ ███████╗ █████╗ ███╗   ██╗
     ████╗  ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
     ██╔██╗ ██║██║   ██║█████╗  ███████║██╔██╗ ██║
     ██║╚██╗██║██║   ██║██╔══╝  ██╔══██║██║╚██╗██║
     ██║ ╚████║╚██████╔╝██║     ██║  ██║██║ ╚████║
     ╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝
-                                                 
-    ██████╗  █████╗ ███╗   ███╗██████╗ ███████╗  
-    ██╔══██╗██╔══██╗████╗ ████║██╔══██╗██╔════╝  
-    ██████╔╝███████║██╔████╔██║██████╔╝█████╗    
-    ██╔══██╗██╔══██║██║╚██╔╝██║██╔══██╗██╔══╝    
-    ██║  ██║██║  ██║██║ ╚═╝ ██║██████╔╝███████╗  
-    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚══════╝{Fore.RESET} 
+
+    ██████╗  █████╗ ███╗   ███╗██████╗ ███████╗
+    ██╔══██╗██╔══██╗████╗ ████║██╔══██╗██╔════╝
+    ██████╔╝███████║██╔████╔██║██████╔╝█████╗
+    ██╔══██╗██╔══██║██║╚██╔╝██║██╔══██╗██╔══╝
+    ██║  ██║██║  ██║██║ ╚═╝ ██║██████╔╝███████╗
+    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚══════╝{Fore.RESET}
     """
     print(custom_ascii_art)
     print(f"{Fore.YELLOW}NODEPAY NETWORK BOT")
     print("WELCOME & ENJOY SIR!", Fore.RESET)
 
 
-
 display_header()
-
 
 
 def show_warning():
@@ -54,39 +52,21 @@ def show_warning():
         exit()
 
 
-
 # Constants
-
 PING_INTERVAL = 60
 
 RETRIES = 60
 
 
-
 DOMAIN_API_ENDPOINTS = {
-
-    "SESSION": [
-
-        "http://api.nodepay.ai/api/auth/session"
-
-    ],
-
-    "PING": [
-
-        "http://52.77.10.116/api/network/ping",
-
-        "http://13.215.134.222/api/network/ping"
-
-    ]
-
+    "SESSION": ["http://api.nodepay.ai/api/auth/session"],
+    "PING": ["http://52.77.10.116/api/network/ping", "http://13.215.134.222/api/network/ping"],
 }
-
 
 
 def get_random_endpoint(endpoint_type):
 
     return random.choice(DOMAIN_API_ENDPOINTS[endpoint_type])
-
 
 
 def get_endpoint(endpoint_type):
@@ -98,17 +78,7 @@ def get_endpoint(endpoint_type):
     return get_random_endpoint(endpoint_type)
 
 
-
-CONNECTION_STATES = {
-
-    "CONNECTED": 1,
-
-    "DISCONNECTED": 2,
-
-    "NONE_CONNECTION": 3
-
-}
-
+CONNECTION_STATES = {"CONNECTED": 1, "DISCONNECTED": 2, "NONE_CONNECTION": 3}
 
 
 status_connect = CONNECTION_STATES["NONE_CONNECTION"]
@@ -117,15 +87,13 @@ browser_id = None
 
 account_info = {}
 
-last_ping_time = {}  
-
+last_ping_time = {}
 
 
 def uuidv4():
 
     return str(uuid.uuid4())
 
-    
 
 def valid_resp(resp):
 
@@ -136,12 +104,11 @@ def valid_resp(resp):
     return resp
 
 
-
 def load_proxies(proxy_file):
 
     try:
 
-        with open(proxy_file, 'r') as file:
+        with open(proxy_file, "r") as file:
 
             proxies = file.read().splitlines()
 
@@ -154,12 +121,9 @@ def load_proxies(proxy_file):
         raise SystemExit("Exiting due to failure in loading proxies")
 
 
-
 async def render_profile_info(proxy, token):
 
     global browser_id, account_info
-
-
 
     try:
 
@@ -199,13 +163,13 @@ async def render_profile_info(proxy, token):
 
         error_message = str(e)
 
-        if any(phrase in error_message for phrase in [
-
-            "sent 1011 (internal error) keepalive ping timeout; no close frame received",
-
-            "500 Internal Server Error"
-
-        ]):
+        if any(
+            phrase in error_message
+            for phrase in [
+                "sent 1011 (internal error) keepalive ping timeout; no close frame received",
+                "500 Internal Server Error",
+            ]
+        ):
 
             logger.info(f"Removing error proxy from the list: {proxy}")
 
@@ -220,40 +184,26 @@ async def render_profile_info(proxy, token):
             return proxy
 
 
-
 async def call_api(url, data, proxy, token):
 
-    user_agent = UserAgent(os=['windows', 'macos', 'linux'], browsers='chrome')
+    user_agent = UserAgent(os=["windows", "macos", "linux"], browsers="chrome")
 
     random_user_agent = user_agent.random
 
     headers = {
-
         "Authorization": f"Bearer {token}",
-
         "User-Agent": random_user_agent,
-
         "Content-Type": "application/json",
-
         "Origin": "chrome-extension://lgmpfmgeabnnlemejacfljbmonaomfmm",
-
         "Accept": "application/json",
-
         "Accept-Language": "en-US,en;q=0.5",
-
     }
-
-
 
     try:
 
         scraper = cloudscraper.create_scraper()
 
-        response = scraper.post(url, json=data, headers=headers, proxies={
-
-                                "http": proxy, "https": proxy}, timeout=30)
-
-
+        response = scraper.post(url, json=data, headers=headers, proxies={"http": proxy, "https": proxy}, timeout=30)
 
         response.raise_for_status()
 
@@ -264,7 +214,6 @@ async def call_api(url, data, proxy, token):
         logger.error(f"Error during API call: {e}")
 
         raise ValueError(f"Failed API call to {url}")
-
 
 
 async def start_ping(proxy, token):
@@ -285,17 +234,12 @@ async def start_ping(proxy, token):
 
         logger.error(f"Error in start_ping for proxy {proxy}: {e}")
 
-        
 
 async def ping(proxy, token):
 
     global last_ping_time, RETRIES, status_connect
 
-
-
     current_time = time.time()
-
-
 
     if proxy in last_ping_time and (current_time - last_ping_time[proxy]) < PING_INTERVAL:
 
@@ -303,27 +247,11 @@ async def ping(proxy, token):
 
         return
 
-
-
     last_ping_time[proxy] = current_time
-
-
 
     try:
 
-        data = {
-
-            "id": account_info.get("uid"),
-
-            "browser_id": browser_id,  
-
-            "timestamp": int(time.time()),
-
-            "version": "2.2.7"
-
-        }
-
-
+        data = {"id": account_info.get("uid"), "browser_id": browser_id, "timestamp": int(time.time()), "version": "2.2.7"}
 
         response = await call_api(get_endpoint("PING"), data, proxy, token)
 
@@ -346,12 +274,9 @@ async def ping(proxy, token):
         handle_ping_fail(proxy, None)
 
 
-
 def handle_ping_fail(proxy, response):
 
     global RETRIES, status_connect
-
-
 
     RETRIES += 1
 
@@ -368,12 +293,9 @@ def handle_ping_fail(proxy, response):
         status_connect = CONNECTION_STATES["DISCONNECTED"]
 
 
-
 def handle_logout(proxy):
 
     global status_connect, account_info
-
-
 
     status_connect = CONNECTION_STATES["NONE_CONNECTION"]
 
@@ -384,76 +306,61 @@ def handle_logout(proxy):
     logger.info(f"Logged out and cleared session info for proxy {proxy}")
 
 
-
 def save_status(proxy, status):
-
-    pass  
-
-
-
-def save_session_info(proxy, data):
-
-    data_to_save = {
-
-        "uid": data.get("uid"),
-
-        "browser_id": browser_id  
-
-    }
 
     pass
 
 
+def save_session_info(proxy, data):
+
+    data_to_save = {"uid": data.get("uid"), "browser_id": browser_id}
+
 
 def load_session_info(proxy):
 
-    return {}  
-
+    return {}
 
 
 def is_valid_proxy(proxy):
 
-    return True  
-
+    return True
 
 
 def remove_proxy_from_list(proxy):
 
-    pass  
-
+    pass
 
 
 async def main():
 
     proxy_choice = input("Choose proxy mode: [1] Auto-fetch proxies or [2] Load from proxies.txt: ").strip()
 
-
-
     if proxy_choice == "1":
 
-        r = requests.get("https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text", stream=True)
+        r = requests.get(
+            "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text",
+            stream=True,
+        )
 
         if r.status_code == 200:
 
-            with open('auto_proxies.txt', 'wb') as f:
+            with open("auto_proxies.txt", "wb") as f:
 
                 for chunk in r:
 
                     f.write(chunk)
 
-        all_proxies = load_proxies('auto_proxies.txt')
+        all_proxies = load_proxies("auto_proxies.txt")
 
     elif proxy_choice == "2":
 
-        all_proxies = load_proxies('proxies.txt')
+        all_proxies = load_proxies("proxies.txt")
 
     else:
 
         print("Invalid choice. Exiting.")
 
         return
-
-
 
     token = input("Nodepay token: ").strip()
 
@@ -463,15 +370,11 @@ async def main():
 
         exit()
 
-
-
     while True:
 
         active_proxies = [proxy for proxy in all_proxies if is_valid_proxy(proxy)][:100]
 
         tasks = {asyncio.create_task(render_profile_info(proxy, token)): proxy for proxy in active_proxies}
-
-
 
         done, pending = await asyncio.wait(tasks.keys(), return_when=asyncio.FIRST_COMPLETED)
 
@@ -499,8 +402,6 @@ async def main():
 
             tasks.pop(task)
 
-
-
         for proxy in set(active_proxies) - set(tasks.values()):
 
             new_task = asyncio.create_task(render_profile_info(proxy, token))
@@ -512,8 +413,7 @@ async def main():
     await asyncio.sleep(10)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     show_warning()
 
