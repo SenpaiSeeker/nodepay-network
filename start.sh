@@ -1,4 +1,5 @@
 function auto() {
+    python3 auto.py
     TOKEN=$(cat token.txt)
     echo -e "$TOKEN" | python3 main.py &
     NODEPAY_PID=$!
