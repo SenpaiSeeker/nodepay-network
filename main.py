@@ -98,7 +98,8 @@ async def main():
     active_proxies = [proxy for proxy in all_proxies if proxy]
     tasks = [render_profile_info(proxy, token) for proxy in active_proxies]
 
-    await asyncio.gather(*tasks)
+    while True:
+        await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
