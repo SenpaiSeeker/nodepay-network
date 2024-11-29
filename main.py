@@ -9,7 +9,7 @@ from loguru import logger
 PING_INTERVAL = 1
 DOMAIN_API_ENDPOINTS = {
     "SESSION": ["http://api.nodepay.ai/api/auth/session"],
-    "PING": ["http://52.77.10.116/api/network/ping", "http://13.215.134.222/api/network/ping"],
+    "PING": ["https://api.nodepay.ai/api/network/ping"],
 }
 
 
