@@ -96,7 +96,7 @@ async def main():
         return
 
     active_proxies = [proxy for proxy in all_proxies if proxy]
-    tasks = {asyncio.create_task(render_profile_info(proxy, token)): proxy for proxy in active_proxies}
+    tasks = [render_profile_info(proxy, token) proxy for proxy in active_proxies]
 
     await asyncio.gather(*tasks)
 
