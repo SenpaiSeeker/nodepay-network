@@ -88,8 +88,7 @@ async def ping(proxy, token, uid):
 
 
 async def main():
-    proxy_file = input("Enter proxy file name (e.g., proxies.txt): ").strip()
-    all_proxies = load_proxies(proxy_file)
+    all_proxies = load_proxies("proxies.txt")
 
     token = input("Enter Nodepay token: ").strip()
     if not token:
